@@ -7,4 +7,3 @@
 /raw_data/*
 /predict_ds/*
 /train_ds/*
-/checkpoints/*
