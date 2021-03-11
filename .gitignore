@@ -1,0 +1,10 @@
+/env
+*/__pycache__/*
+*/__pycache__
+/__pycache__
+.vscode
+.DS_Store
+/raw_data/*
+/predict_ds/*
+/train_ds/*
+/checkpoints/*
