@@ -9,7 +9,7 @@ import numpy as np
 def untar_file(file,folder_name:str):
     #save file
     name = file.filename
-    f = open("./raw_data/"+name, "wb")
+    f = open("raw_data/"+name, "wb")
     f.write(file.file.read())
     f.close()
     #preprocessing data
@@ -78,7 +78,7 @@ def predict(data_name,weight_dir):
     img_array = keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0) # Create a batch
 
-    model = tf.keras.models.load_model("./checkpoints/flower_photos")
+    model = tf.keras.models.load_model("./checkpoints/"+data_name)
     result = np.argmax(model.predict(img_array))
     result = os.listdir("train_ds/"+weight_dir)[result]
     return result
@@ -104,3 +104,43 @@ def create_model(weight_dir):
     )    
     model.summary()
     return model
+
+def conts_train(train_dir:str, epochs:int):
+    model  = tf.keras.models.load_model("./checkpoints/"+train_dir)
+    #train_ds
+    train_dir = "train_ds/"+train_dir
+    train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+        directory=train_dir,
+        batch_size=16,
+        validation_split=0.2,
+        subset="training",
+        seed=123,
+        image_size=(180,180)
+    )
+    #val_ds
+    val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+        directory=train_dir,
+        batch_size=16,
+        validation_split=0.2,
+        subset='validation',
+        seed = 123,
+        image_size=(180,180)
+    )
+
+    #config to save model
+    save_model = keras.callbacks.ModelCheckpoint(
+        filepath="checkpoints/"+train_dir.split("/")[1],
+        monitor="val_accuracy",
+        verbose=1,
+        save_best_only=True,
+        save_weights_only=False
+    )
+    history = model.fit(
+        train_ds,
+        validation_data=val_ds,
+        epochs=epochs,
+        callbacks=[save_model]
+    )
+
+    val_acc = max(history.history["val_accuracy"])
+    return {"val_accuracy":val_acc}

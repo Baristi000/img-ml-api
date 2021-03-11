@@ -16,19 +16,26 @@ def upload_data(
 
 @router.get("/training")
 def train_model(
-    data_dir:str = None
+    train_dir:str = None
 ):
-    if data_dir != None:
-        return f.training(data_dir)
+    if train_dir != None:
+        return f.training(traindir)
     else:
         raise HTTPException(404,"data_dir not found")
 
 @router.post(path="/predict")
 def predict(
     data:UploadFile = File(...),
-    train_name:str = None
+    train_dir:str = None
 ):
     img = Image.open(data.file)
     img.save("./predict_ds/"+data.filename)
-    result = f.predict(data_name = data.filename, weight_dir=train_name)
+    result = f.predict(data_name = data.filename, weight_dir=train_dir)
     return{"result":result}
+
+@router.get("/conts-train")
+def const_train(
+    train_dir: str = None,
+    epochs:int = 10
+):
+    return f.conts_train(train_dir, epochs)
