@@ -29,7 +29,7 @@ def training(train_dir:str):
     train_dir = "train_ds/"+train_dir
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
         directory=train_dir,
-        batch_size=16,
+        batch_size=4,
         validation_split=0.2,
         subset="training",
         seed=123,
@@ -38,7 +38,7 @@ def training(train_dir:str):
     #val_ds
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
         directory=train_dir,
-        batch_size=16,
+        batch_size=4,
         validation_split=0.2,
         subset='validation',
         seed = 123,
@@ -78,7 +78,7 @@ def predict(data_name,weight_dir):
     img_array = keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0) # Create a batch
 
-    model = tf.keras.models.load_model("./checkpoints/"+data_name)
+    model  = tf.keras.models.load_model("./checkpoints/"+weight_dir)
     result = np.argmax(model.predict(img_array))
     result = os.listdir("train_ds/"+weight_dir)[result]
     return result
@@ -111,7 +111,7 @@ def conts_train(train_dir:str, epochs:int):
     train_dir = "train_ds/"+train_dir
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
         directory=train_dir,
-        batch_size=16,
+        batch_size=4,
         validation_split=0.2,
         subset="training",
         seed=123,
@@ -120,7 +120,7 @@ def conts_train(train_dir:str, epochs:int):
     #val_ds
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
         directory=train_dir,
-        batch_size=16,
+        batch_size=4,
         validation_split=0.2,
         subset='validation',
         seed = 123,
