@@ -84,22 +84,25 @@ def predict(data_name,weight_dir):
     return result
 
 def create_model(weight_dir):
-    model = keras.Sequential([
-        keras.layers.experimental.preprocessing.Rescaling(1./255, input_shape=(180, 180, 3)),
-        keras.layers.Conv2D(16, 3, padding='same', activation='relu'),
-        keras.layers.MaxPooling2D(),
-        keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
-        keras.layers.MaxPooling2D(),
-        keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
-        keras.layers.MaxPooling2D(),
-        keras.layers.Dropout(0.2),
-        keras.layers.Flatten(),
-        keras.layers.Dense(128, activation='relu'),
-        keras.layers.Dense(len(os.listdir("train_ds/"+weight_dir)), activation="softmax")
-    ])    
+    model = tf.keras.Sequential([
+        tf.keras.layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(180,180,3)),
+        tf.keras.layers.experimental.preprocessing.RandomRotation(0.1),
+        tf.keras.layers.experimental.preprocessing.RandomZoom(0.1),
+        tf.keras.layers.experimental.preprocessing.Rescaling(1./255),
+        tf.keras.layers.Conv2D(16, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(32, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Conv2D(64, 3, padding='same', activation='relu'),
+        tf.keras.layers.MaxPooling2D(),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(len(os.listdir("train_ds/"+weight_dir)))
+    ])
     model.compile(
         optimizer="Adam",
-        loss="sparse_categorical_crossentropy",
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=["accuracy"]
     )    
     model.summary()
